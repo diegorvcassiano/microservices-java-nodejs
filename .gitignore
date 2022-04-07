@@ -28,3 +28,6 @@ dist/
 
 #java ignores
 target/
+
+# VS Code ignores
+.vscode/
