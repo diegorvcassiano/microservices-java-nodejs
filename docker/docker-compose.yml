@@ -42,3 +42,30 @@ services:
       - 5672:5672
       - 25676:25676
       - 15672:15672
+
+  auth-api:
+    build: "../node/auth-api"
+    container_name: auth-api
+    # restart: always
+    environment:
+      - PORT=8080
+    ports:
+      - 8080:8080
+
+  sales-api:
+    build: "../node/sales-api"
+    container_name: sales-api
+    # restart: always
+    environment:
+      - PORT=8082
+    ports:
+      - 8082:8082
+
+  product-api:
+    build: "../java/product-api"
+    container_name: product-api
+    # restart: always
+    environment:
+      - PORT=8081
+    ports:
+      - 8081:8081
