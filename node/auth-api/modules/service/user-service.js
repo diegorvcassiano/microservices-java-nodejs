@@ -13,6 +13,7 @@ class UserService {
       this.validateRequestData(email);
       let user = await UserRepository.findByEmail(email);
       this.validateUserNotFound(user);
+      this.validateAuthenticatedUser(user, req.authUser);
       return {
         status: httpStatus.SUCESS,
         user: {
@@ -65,6 +66,15 @@ class UserService {
         status: error.status ? error.status : httpStatus.INTERNAL_SERVER_ERROR,
         message: error.message,
       };
+    }
+  }
+
+  validateAuthenticatedUser(user, authUser) {
+    if (!authUser || user.id !== authUser.id) {
+      throw new UserException(
+        httpStatus.FORBIDDEN,
+        `User ${authUser.email} cannot access this data`
+      );
     }
   }
 
