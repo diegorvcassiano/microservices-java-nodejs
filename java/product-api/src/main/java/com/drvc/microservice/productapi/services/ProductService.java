@@ -5,10 +5,13 @@ import java.util.stream.Collectors;
 
 import com.drvc.microservice.productapi.dtos.ProductRequest;
 import com.drvc.microservice.productapi.dtos.ProductResponse;
+import com.drvc.microservice.productapi.dtos.ProductStockDTO;
 import com.drvc.microservice.productapi.exceptions.ValidationException;
 import com.drvc.microservice.productapi.models.Product;
 import com.drvc.microservice.productapi.repositories.ProductRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -22,6 +25,8 @@ public class ProductService {
     private CategoryService categoryService;
     @Autowired
     private SupplierService supplierService;
+
+    private static Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     public ProductResponse save(ProductRequest request) {
         validateProductDataInformed(request);
@@ -93,5 +98,9 @@ public class ProductService {
         if (ObjectUtils.isEmpty(request.getSupplierId())) {
             throw new ValidationException("Product supplier id not available!");
         }
+    }
+
+    public void updateProductStock(ProductStockDTO product) {
+        logger.info("updateProductStock - Received message: " + product.toString());
     }
 }
