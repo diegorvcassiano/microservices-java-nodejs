@@ -6,9 +6,12 @@ import java.util.stream.Collectors;
 import com.drvc.microservice.productapi.dtos.ProductRequest;
 import com.drvc.microservice.productapi.dtos.ProductResponse;
 import com.drvc.microservice.productapi.dtos.ProductStockDTO;
+import com.drvc.microservice.productapi.dtos.SalesConfirmationDTO;
 import com.drvc.microservice.productapi.exceptions.ValidationException;
 import com.drvc.microservice.productapi.models.Product;
+import com.drvc.microservice.productapi.rabbitmq.SalesConfirmationSender;
 import com.drvc.microservice.productapi.repositories.ProductRepository;
+import com.drvc.microservice.productapi.sales.SalesStatus;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,8 @@ public class ProductService {
     private CategoryService categoryService;
     @Autowired
     private SupplierService supplierService;
+    @Autowired
+    private SalesConfirmationSender salesConfirmationSender;
 
     private static Logger logger = LoggerFactory.getLogger(ProductService.class);
 
@@ -100,7 +105,37 @@ public class ProductService {
         }
     }
 
-    public void updateProductStock(ProductStockDTO product) {
-        logger.info("updateProductStock - Received message: " + product.toString());
+    public void updateProductStock(ProductStockDTO productDTO) {
+        logger.info("updateProductStock - Received message: " + productDTO.toString());
+        try {
+            validateStockUpdateData(productDTO);
+            // Test - Send a fake confirmation just for testing purposes
+            salesConfirmationSender.salesConfirmationMessage(
+                    new SalesConfirmationDTO(productDTO.getSalesId(), SalesStatus.APPROVED));
+        } catch (Exception e) {
+            logger.error("Error while processing sales request", e.getMessage());
+            salesConfirmationSender.salesConfirmationMessage(
+                    new SalesConfirmationDTO(productDTO.getSalesId(), SalesStatus.REJECTED));
+        }
+
+    }
+
+    private void validateStockUpdateData(ProductStockDTO productDTO) {
+        if (ObjectUtils.isEmpty(productDTO)
+                || ObjectUtils.isEmpty(productDTO.getSalesId())) {
+            throw new ValidationException(("The product data and sales id must be informed!"));
+        }
+
+        if (ObjectUtils.isEmpty(productDTO.getProducts())) {
+            throw new ValidationException(("The sales products cannot be empty!"));
+        }
+
+        productDTO.getProducts()
+                .forEach(sales -> {
+                    if (ObjectUtils.isEmpty(sales.getQuantity())
+                            || ObjectUtils.isEmpty(sales.getProductId())) {
+                        throw new ValidationException("For sales, product id and quantity must be informed!");
+                    }
+                });
     }
 }
