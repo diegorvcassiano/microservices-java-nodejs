@@ -1,12 +1,10 @@
-insert into category (id, description) values (1, 'Comic Books');
-insert into category (id, description) values (2, 'Movies');
-insert into category (id, description) values (3, 'Books');
+insert into category (id, description) values (1001, 'Comic Books');
+insert into category (id, description) values (1002, 'Movies');
+insert into category (id, description) values (1003, 'Books');
 
-insert into supplier (id, name) values (1, 'Panini comics');
-insert into supplier (id, name) values (2, 'Amazon');
+insert into supplier (id, name) values (1001, 'Panini comics');
+insert into supplier (id, name) values (1002, 'Amazon');
 
-insert into product (id, name, quantity, fk_category, fk_supplier) values (1, 'Warcraft - entre dois mundos',  10, 2, 2);
-
-insert into product (id, name, quantity, fk_category, fk_supplier) values (2, 'Scrum for all',  3, 3, 2);
-
-insert into product (id, name, quantity, fk_category, fk_supplier) values (3, 'Cowboy Beebop',  8, 1, 1);
+insert into product (id, name, quantity, fk_category, fk_supplier, created_at) values (1001, 'Warcraft - entre dois mundos',  10, 1002, 1002, CURRENT_TIMESTAMP);
+insert into product (id, name, quantity, fk_category, fk_supplier, created_at) values (1002, 'Scrum for all',  3, 1003, 1002, CURRENT_TIMESTAMP);
+insert into product (id, name, quantity, fk_category, fk_supplier, created_at) values (1003, 'Cowboy Beebop',  8, 1001, 1001, CURRENT_TIMESTAMP);
